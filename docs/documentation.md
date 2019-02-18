@@ -82,7 +82,6 @@ description: "General documentation about how to using SpaceVim, including the q
     - [Increase/Decrease numbers](#increasedecrease-numbers)
     - [Replace text with iedit](#replace-text-with-iedit)
       - [iedit states key bindings](#iedit-states-key-bindings)
-      - [Examples](#examples)
     - [Commenting](#commenting)
     - [Multi-Encodings](#multi-encodings)
   - [Code runner and REPL](#code-runner-and-repl)
@@ -984,14 +983,14 @@ The `SPC j` prefix is for jumping, joining and splitting.
 
 ##### Joining and splitting
 
-| Key Bindings | Descriptions                                                             |
-| ------------ | ------------------------------------------------------------------------ |
-| `J`          | join the current line with the next line                                 |
-| `SPC j k`    | go to next line and indent it using auto-indent rules                    |
-| `SPC j n`    | split the current line at point, insert a new line and auto-indent       |
-| `SPC j o`    | split the current line at point but let point on current line            |
-| `SPC j s`    | split a quoted string or s-expression in place                           |
-| `SPC j S`    | split a quoted string or s-expression, insert a new line and auto-indent |
+| Key Bindings | Descriptions                                                                  |
+| ------------ | ----------------------------------------------------------------------------- |
+| `J`          | join the current line with the next line                                      |
+| `SPC j k`    | go to next line and indent it using auto-indent rules                         |
+| `SPC j n`    | split the current line at point, insert a new line and auto-indent            |
+| `SPC j o`    | split the current line at point but let point on current line                 |
+| `SPC j s`    | split a quoted string or s-expression in place                                |
+| `SPC j S`    | split a quoted string or s-expression with `\n`, and auto-indent the new line |
 
 #### Window manipulation
 
@@ -1558,7 +1557,7 @@ Text related commands (start with `x`):
 | `SPC x a &`     | align region at &                                                    |
 | `SPC x a (`     | align region at (                                                    |
 | `SPC x a )`     | align region at )                                                    |
-| `SPC x a [`     | align region at \[                                                   |
+| `SPC x a [`     | align region at [                                                    |
 | `SPC x a ]`     | align region at ]                                                    |
 | `SPC x a {`     | align region at {                                                    |
 | `SPC x a }`     | align region at }                                                    |
@@ -1574,7 +1573,7 @@ Text related commands (start with `x`):
 | `SPC x a c`     | align current indentation region using default rules (TODO)          |
 | `SPC x a l`     | left-align with evil-lion (TODO)                                     |
 | `SPC x a L`     | right-align with evil-lion (TODO)                                    |
-| `SPC x a r`     | align region using user-specified regexp (TODO)                      |
+| `SPC x a r`     | align region at user-specified regexp                                |
 | `SPC x a o`     | align region at operators `+-*/`                                     |
 | `SPC x c`       | count the number of chars/words/lines in the selection region        |
 | `SPC x d w`     | delete trailing whitespaces                                          |
@@ -1605,8 +1604,8 @@ Text related commands (start with `x`):
 | `SPC x t c`     | swap (transpose) the current character with the previous one         |
 | `SPC x t w`     | swap (transpose) the current word with the previous one              |
 | `SPC x t l`     | swap (transpose) the current line with the previous one              |
-| `SPC x u`       | set the selected text to lower case (TODO)                           |
-| `SPC x U`       | set the selected text to upper case (TODO)                           |
+| `SPC x u`       | set the selected text to lower case                                  |
+| `SPC x U`       | set the selected text to upper case                                  |
 | `SPC x w c`     | count the number of occurrences per word in the select region (TODO) |
 | `SPC x w d`     | show dictionary entry of word from wordnik.com (TODO)                |
 | `SPC x TAB`     | indent or dedent a region rigidly (TODO)                             |
@@ -1697,25 +1696,25 @@ The default color for iedit is `red`/`green` which is based on the current color
 | `Ctrl-w`     | delete words before cursor     |
 | `Ctrl-k`     | delete words after cursor      |
 
-##### Examples
-
 #### Commenting
 
 Comments are handled by [nerdcommenter](https://github.com/scrooloose/nerdcommenter), it’s bound to the following keys.
 
-| Key Bindings | Descriptions                  |
-| ------------ | ----------------------------- |
-| `SPC ;`      | comment operator              |
-| `SPC c h`    | hide/show comments            |
-| `SPC c l`    | toggle comment lines          |
-| `SPC c L`    | comment lines                 |
-| `SPC c p`    | comment paragraphs            |
-| `SPC c P`    | toggle comment paragraphs     |
-| `SPC c s`    | comment with pretty layout    |
-| `SPC c t`    | comment to line               |
-| `SPC c T`    | toggle comment to line        |
-| `SPC c y`    | comment and yank(TODO)        |
-| `SPC c Y`    | toggle comment and yank(TODO) |
+| Key Bindings | Descriptions                                            |
+| ------------ | ------------------------------------------------------- |
+| `SPC ;`      | comment operator                                        |
+| `SPC c h`    | hide/show comments                                      |
+| `SPC c l`    | toggle comment lines                                    |
+| `SPC c L`    | comment lines                                           |
+| `SPC c u`    | uncomment lines                                         |
+| `SPC c p`    | toggle comment paragraphs                               |
+| `SPC c P`    | comment paragraphs                                      |
+| `SPC c s`    | comment with pretty layout                              |
+| `SPC c t`    | toggle comment to line                                  |
+| `SPC c T`    | comment to line                                         |
+| `SPC c y`    | toggle comment and yank(TODO)                           |
+| `SPC c Y`    | yank and comment                                        |
+| `SPC c $`    | comment current line from cursor to the end of the line |
 
 **Tips:** `SPC ;` will start operator mode, in this mode, you can use motion command to comment lines.
 For example, `SPC ; 4 j` will comment current line and the following 4 lines.
