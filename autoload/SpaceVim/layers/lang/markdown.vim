@@ -31,6 +31,12 @@ function! SpaceVim#layers#lang#markdown#plugins() abort
 endfunction
 
 function! SpaceVim#layers#lang#markdown#config() abort
+  " do not highlight markdown error
+  let g:markdown_hi_error = 0
+  " the fenced languages based on loaded language layer
+  let g:markdown_fenced_languages = []
+  let g:markdown_nested_languages = map(filter(SpaceVim#layers#get(),
+        \ 'v:val =~# "^lang#" && v:val !=# "lang#markdown" && v:val !=# "lang#vim"'), 'v:val[5:]')
   let g:vmt_list_item_char = s:md_listItemChar
   let g:markdown_minlines = 100
   let g:markdown_syntax_conceal = 0
@@ -58,8 +64,10 @@ function! SpaceVim#layers#lang#markdown#config() abort
   let g:mkdp_browserfunc = 'openbrowser#open'
   " }}}
   call SpaceVim#mapping#space#regesit_lang_mappings('markdown', function('s:mappings'))
-  nnoremap <silent> <plug>(markdown-insert-link) :call <SID>markdown_insert_url(0)<Cr>
-  xnoremap <silent> <plug>(markdown-insert-link) :<C-u> call <SID>markdown_insert_url(1)<Cr>
+  nnoremap <silent> <plug>(markdown-insert-link) :call <SID>markdown_insert_link(0, 0)<Cr>
+  xnoremap <silent> <plug>(markdown-insert-link) :<C-u> call <SID>markdown_insert_link(1, 0)<Cr>
+  nnoremap <silent> <plug>(markdown-insert-picture) :call <SID>markdown_insert_link(0, 1)<Cr>
+  xnoremap <silent> <plug>(markdown-insert-picture) :<C-u> call <SID>markdown_insert_link(1, 1)<Cr>
   augroup spacevim_layer_lang_markdown
     autocmd!
     autocmd FileType markdown setlocal omnifunc=htmlcomplete#CompleteTags
@@ -73,6 +81,7 @@ function! s:mappings() abort
   let g:_spacevim_mappings_space.l = {'name' : '+Language Specified'}
   call SpaceVim#mapping#space#langSPC('nmap', ['l','p'], 'MarkdownPreview', 'Real-time markdown preview', 1)
   call SpaceVim#mapping#space#langSPC('nmap', ['l','k'], '<plug>(markdown-insert-link)', 'add link url', 0, 1)
+  call SpaceVim#mapping#space#langSPC('nmap', ['l','K'], '<plug>(markdown-insert-picture)', 'add link picture', 0, 1)
   call SpaceVim#mapping#space#langSPC('nmap', ['l', 'r'], 
         \ 'call call('
         \ . string(function('s:run_code_in_block'))
@@ -100,20 +109,23 @@ function! s:generate_remarkrc() abort
   return f
 endfunction
 
-function! s:markdown_insert_url(visual) abort
+function! s:markdown_insert_link(isVisual, isPicture) abort
   if !empty(@+)
     let l:save_register_unnamed = @"
     let l:save_edge_left = getpos("'<")
     let l:save_edge_right = getpos("'>")
-    if !a:visual
+    if !a:isVisual
       execute "normal! viw\<esc>"
     endif
     let l:paste = (col("'>") == col("$") - 1 ? 'p' : 'P')
     normal! gvx
     let @" = '[' . @" . '](' . @+ . ')'
+    if a:isPicture
+      let @" = '!' . @"
+    endif
     execute 'normal! ' . l:paste
     let @" = l:save_register_unnamed
-    if a:visual
+    if a:isVisual
       let l:save_edge_left[2] += 1
       if l:save_edge_left[1] == l:save_edge_right[1]
         let l:save_edge_right[2] += 1
