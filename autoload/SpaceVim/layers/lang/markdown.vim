@@ -25,7 +25,10 @@ function! SpaceVim#layers#lang#markdown#plugins() abort
   call add(plugins, ['joker1007/vim-markdown-quote-syntax',{ 'on_ft' : 'markdown'}])
   call add(plugins, ['mzlogin/vim-markdown-toc',{ 'on_ft' : 'markdown'}])
   call add(plugins, ['iamcco/mathjax-support-for-mkdp',{ 'on_ft' : 'markdown'}])
-  call add(plugins, ['iamcco/markdown-preview.vim', { 'depends' : 'open-browser.vim', 'on_ft' : 'markdown' }])
+  call add(plugins, ['iamcco/markdown-preview.nvim',
+        \ { 'on_ft' : 'markdown',
+        \ 'depends': 'open-browser.vim',
+        \ 'build' : 'cd app & yarn install' }])
   call add(plugins, ['lvht/tagbar-markdown',{'merged' : 0}])
   return plugins
 endfunction
@@ -36,7 +39,7 @@ function! SpaceVim#layers#lang#markdown#config() abort
   " the fenced languages based on loaded language layer
   let g:markdown_fenced_languages = []
   let g:markdown_nested_languages = map(filter(SpaceVim#layers#get(),
-        \ 'v:val =~# "^lang#" && v:val !=# "lang#markdown" && v:val !=# "lang#vim"'), 'v:val[5:]')
+        \ 'v:val =~# "^lang#" && v:val !=# "lang#markdown" && v:val !=# "lang#ipynb" && v:val !=# "lang#vim"'), 'v:val[5:]')
   let g:vmt_list_item_char = s:md_listItemChar
   let g:markdown_minlines = 100
   let g:markdown_syntax_conceal = 0
