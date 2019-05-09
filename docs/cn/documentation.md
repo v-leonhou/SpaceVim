@@ -51,8 +51,8 @@ lang: cn
       - [合并，拆分](#合并拆分)
     - [窗口操作](#窗口操作)
       - [窗口操作常用快捷键](#窗口操作常用快捷键)
-    - [文件和 Buffer 操作](#文件和-buffer-操作)
-      - [Buffer 操作相关快捷键](#buffer-操作相关快捷键)
+    - [文件和缓冲区操作](#文件和缓冲区操作)
+      - [缓冲区操作](#缓冲区操作)
       - [新建空白 buffer](#新建空白-buffer)
       - [特殊 buffer](#特殊-buffer)
       - [文件操作相关快捷键](#文件操作相关快捷键)
@@ -82,8 +82,8 @@ lang: cn
     - [文本操作命令](#文本操作命令)
     - [文本插入命令](#文本插入命令)
     - [增加或减小数字](#增加或减小数字)
-    - [Replace text with iedit](#replace-text-with-iedit)
-      - [iedit states key bindings](#iedit-states-key-bindings)
+    - [Iedit 多光标编辑](#iedit-多光标编辑)
+      - [Iedit 快捷键](#iedit-快捷键)
     - [注释 (Commentings)](#注释-commentings)
     - [多方式编码](#多方式编码)
   - [异步运行器和交互式编程](#异步运行器和交互式编程)
@@ -91,7 +91,7 @@ lang: cn
   - [工程管理](#工程管理)
     - [在工程中搜索文件](#在工程中搜索文件)
 - [格式规范](#格式规范)
-- [Vim 服务器](#vim-服务器)
+- [Vim 服务](#vim-服务)
 - [Achievements](#achievements)
   - [issues](#issues)
   - [Stars, forks and watchers](#stars-forks-and-watchers)
@@ -1038,34 +1038,36 @@ Denite/Unite 是一个强大的信息筛选浏览器，这类似于 Emacs 中的
 | `SPC w w`             | 切换至前一窗口                                                                 |
 | `SPC w W`             | 选择一个窗口                                                                   |
 
-#### 文件和 Buffer 操作
+#### 文件和缓冲区操作
 
-##### Buffer 操作相关快捷键
+##### 缓冲区操作
 
-Buffer 操作相关快捷键都是以 `SPC b` 为前缀的：
+缓冲区（Buffer）操作相关快捷键都是以 `SPC b` 为前缀的，以下为常用的缓冲区操作快捷键，
+主要包括了缓冲区的切换和删除等操作：
 
 | 快捷键          | 功能描述                                                                       |
 | --------------- | ------------------------------------------------------------------------------ |
-| `SPC <Tab>`     | 切换至前一 buffer，可用于两个 buffer 来回切换                                  |
-| `SPC b .`       | 启用 buffer 临时快捷键                                                         |
-| `SPC b b`       | 切换至某一 buffer，通过 Unite/Denite 进行筛选                                  |
-| `SPC b d`       | 删除当前 buffer，但保留 Vim 窗口                                               |
+| `SPC <Tab>`     | 切换至前一缓冲区，常用于两个缓冲区来回切换                                     |
+| `SPC b .`       | 启用缓冲区临时快捷键                                                           |
+| `SPC b b`       | 通过模糊搜索工具进行缓冲区切换，需要启用一个模糊搜索工具模块                   |
+| `SPC b d`       | 删除当前缓冲区，但保留编辑窗口                                                 |
 | `SPC u SPC b d` | kill the current buffer and window (does not delete the visited file) (TODO)   |
-| `SPC b D`       | 选择一个窗口，并删除其 buffer                                                  |
+| `SPC b D`       | 选择一个窗口，并删除其缓冲区                                                   |
 | `SPC u SPC b D` | kill a visible buffer and its window using ace-window(TODO)                    |
-| `SPC b C-d`     | 删除其它 buffers                                                               |
+| `SPC b c`       | 删除其它已保存的缓冲区                                                         |
+| `SPC b C-d`     | 删除其它所有缓冲区                                                             |
 | `SPC b C-D`     | kill buffers using a regular expression(TODO)                                  |
-| `SPC b e`       | 清除当前 buffer 内容，需要手动确认                                             |
-| `SPC b h`       | 打开 _SpaceVim_ 欢迎界面                                                       |
-| `SPC b n`       | 切换至下一个 buffer，排除特殊插件的 buffer                                     |
-| `SPC b m`       | 打开 _Messages_ buffer                                                         |
+| `SPC b e`       | 清除当前缓冲区内容，需要手动确认                                               |
+| `SPC b h`       | 打开欢迎界面, 等同于快捷键 `SPC a s`                                           |
+| `SPC b n`       | 切换至下一个缓冲区，排除特殊插件的缓冲区                                       |
+| `SPC b m`       | 打开消息缓冲区                                                                 |
 | `SPC u SPC b m` | kill all buffers and windows except the current one(TODO)                      |
-| `SPC b p`       | 切换至前一个 buffer，排除特殊插件的 buffer                                     |
-| `SPC b P`       | 使用剪切板内容替换当前 buffer                                                  |
-| `SPC b R`       | 从磁盘重新读取当前 buffer 所对应的文件                                         |
+| `SPC b p`       | 切换至前一个缓冲区，排除特殊插件的缓冲区                                       |
+| `SPC b P`       | 使用系统剪切板内容替换当前缓冲区                                               |
+| `SPC b R`       | 从磁盘重新读取当前缓冲区所对应的文件                                           |
 | `SPC b s`       | switch to the _scratch_ buffer (create it if needed) (TODO)                    |
 | `SPC b w`       | 切换只读权限                                                                   |
-| `SPC b Y`       | 将整个 buffer 复制到剪切板                                                     |
+| `SPC b Y`       | 将整个缓冲区复制到系统剪切板                                                   |
 | `z f`           | Make current function or comments visible in buffer as much as possible (TODO) |
 
 ##### 新建空白 buffer
@@ -1561,20 +1563,20 @@ In highlight symbol transient state:
 | 快捷键        | 功能描述                                                           |
 | ------------- | ------------------------------------------------------------------ |
 | `SPC x a &`   | 基于分隔符 & 进行文本对齐                                          |
-| `SPC x a (`   | 基本分隔符 ( 进行文本对齐                                          |
-| `SPC x a )`   | 基本分隔符 ) 进行文本对齐                                          |
-| `SPC x a [`   | 基本分隔符 [ 进行文本对齐                                          |
-| `SPC x a ]`   | 基本分隔符 ] 进行文本对齐                                          |
-| `SPC x a {`   | 基本分隔符 { 进行文本对齐                                          |
-| `SPC x a }`   | 基本分隔符 } 进行文本对齐                                          |
-| `SPC x a ,`   | 基本分隔符 , 进行文本对齐                                          |
-| `SPC x a .`   | 基本分隔符 . 进行文本对齐(for numeric tables)                      |
-| `SPC x a :`   | 基本分隔符 : 进行文本对齐                                          |
-| `SPC x a ;`   | 基本分隔符 ; 进行文本对齐                                          |
-| `SPC x a =`   | 基本分隔符 = 进行文本对齐                                          |
-| `SPC x a ¦`   | 基本分隔符 ¦ 进行文本对齐                                          |
-| `SPC x a |`   | 基本分隔符 \| 进行文本对齐                                         |
-| `SPC x a SPC` | 基本分隔符 <Space> 进行文本对齐                                    |
+| `SPC x a (`   | 基于分隔符 ( 进行文本对齐                                          |
+| `SPC x a )`   | 基于分隔符 ) 进行文本对齐                                          |
+| `SPC x a [`   | 基于分隔符 [ 进行文本对齐                                          |
+| `SPC x a ]`   | 基于分隔符 ] 进行文本对齐                                          |
+| `SPC x a {`   | 基于分隔符 { 进行文本对齐                                          |
+| `SPC x a }`   | 基于分隔符 } 进行文本对齐                                          |
+| `SPC x a ,`   | 基于分隔符 , 进行文本对齐                                          |
+| `SPC x a .`   | 基于分隔符 . 进行文本对齐(for numeric tables)                      |
+| `SPC x a :`   | 基于分隔符 : 进行文本对齐                                          |
+| `SPC x a ;`   | 基于分隔符 ; 进行文本对齐                                          |
+| `SPC x a =`   | 基于分隔符 = 进行文本对齐                                          |
+| `SPC x a ¦`   | 基于分隔符 ¦ 进行文本对齐                                          |
+| `SPC x a |`   | 基于分隔符 \| 进行文本对齐                                         |
+| `SPC x a SPC` | 基于分隔符 <Space> 进行文本对齐                                    |
 | `SPC x a a`   | align region (or guessed section) using default rules (TODO)       |
 | `SPC x a c`   | align current indentation region using default rules (TODO)        |
 | `SPC x a l`   | left-align with evil-lion (TODO)                                   |
@@ -1655,29 +1657,30 @@ In highlight symbol transient state:
 
 **提示：** 如果你想为光标下的数字所增加的值大于 `1`，你可以使用前缀参数。例如：`10 SPC n +` 将为光标下的数字加 `10`。
 
-#### Replace text with iedit
+#### Iedit 多光标编辑
 
-SpaceVim uses a powerful iedit mode to quick edit multiple occurrences of a symbol or selection.
-
-**两个新模式：** `iedit-Normal` / `iedit-Insert`
+SpaceVim 内置了 iedit 多光标模式，可快速进行多光标编辑。这一功能引入了两个新的模式：`iedit-Normal` 模式和 `iedit-Insert`。
 
 `iedit` 模式默认的颜色是 `red`/`green`，但它也基于当前的主题。
 
-##### iedit states key bindings
+##### Iedit 快捷键
 
-**State transitions:**
+**模式转换:**
+
+前面提到 Iedit 引入了两个新的模式，在这两个新的模式以及 Vim 自身模式之间转换的快捷键如下：
 
 | 快捷键    | From          | to           |
 | --------- | ------------- | ------------ |
 | `SPC s e` | Normal/Visual | iedit-Normal |
+| `<Esc>`   | iedit-Normal  | Normal       |
 
 **在 iedit-Normal 模式中：**
 
-`iedit-Normal` 模式继承自一般模式, 下面所列举的是 `iedit-Normal` 模式专属的快捷键。
+`iedit-Normal` 模式继承自 Vim 的 Normal 模式, 下面所列举的是 `iedit-Normal` 模式专属的快捷键。
 
 | 快捷键          | 功能描述                                                                               |
 | --------------- | -------------------------------------------------------------------------------------- |
-| `<Esc>`         | 切换回一般模式                                                                         |
+| `<Esc>`         | 切换回 Normal 模式                                                                     |
 | `i`             | 切换至 `iedit-Insert` 模式，类似于一般模式下的 `i`                                     |
 | `a`             | 切换至 `iedit-Insert` 模式，类似于一般模式下的 `a`                                     |
 | `I`             | 跳至当前 occurrence 并进入 `iedit-Insert` 模式，类似于一般模式下的 `I`                 |
@@ -1779,7 +1782,7 @@ nnoremap <silent> <F5> :call SpaceVim#plugins#runner#open('make')
 
 ### 错误处理
 
-SpaceVim 通过 [neomake](https://github.com/neomake/neomake) fly 工具来进行错误反馈。默认在操作保存时进行错误检查。
+SpaceVim 通过默认通过 [checkers](../layers/checkers/) 模块来进行文件语法检查，默认在保存文件时进行错误检查。
 
 错误管理导航键 (以 `e` 开头)：
 
@@ -1826,21 +1829,22 @@ SpaceVim 中的工程通过 vim-projectionisst 和 vim-rooter 进行管理。当
 
 #### 在工程中搜索文件
 
-| 快捷键    | 功能描述                                     |
-| --------- | -------------------------------------------- |
-| `SPC p f` | 在当前工程中查找文件                         |
-| `SPC p /` | 在当前工程中搜索文件（fuzzy search for text) |
-| `SPC p k` | 关闭当前工程的所有缓冲区                     |
-| `SPC p t` | find project root                            |
-| `SPC p p` | 显示所有工程                                 |
+| 快捷键    | 功能描述                 |
+| --------- | ------------------------ |
+| `SPC p f` | 在当前工程中查找文件     |
+| `SPC p /` | 在当前工程中搜索文本内容 |
+| `SPC p k` | 关闭当前工程的所有缓冲区 |
+| `SPC p t` | 自动查找工程根目录       |
+| `SPC p p` | 显示所有工程             |
 
 ## 格式规范
 
-SpaceVim has supported for [EditorConfig](http://editorconfig.org/), a configuration file to "define and maintain consistent coding styles between different editors and IDEs."
+SpaceVim 添加了 [EditorConfig](http://editorconfig.org/) 支持，通过一个配置文件来为不同的文件格式设置对应的代码格式规范，
+这一工具兼容多种文本编辑器和集成开发环境。
 
-To customize your editorconfig experience, read the [editorconfig-vim package’s documentation](https://github.com/editorconfig/editorconfig-vim/blob/master/README.md).
+更多配置方式，可以阅读其官方文档：[editorconfig-vim package’s documentation](https://github.com/editorconfig/editorconfig-vim/blob/master/README.md).
 
-## Vim 服务器
+## Vim 服务
 
 SpaceVim 在启动时启动了一个服务器。无论何时，当你关闭了 Vim 窗口，该服务器就会被关闭。
 
