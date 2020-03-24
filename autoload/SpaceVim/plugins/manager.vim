@@ -450,10 +450,19 @@ function! s:pull(repo) abort
   endif
 endfunction
 
+function! s:get_uri(repo) abort
+  if a:repo.repo =~# '^[^/]\+/[^/]\+$'
+    let url = 'https://github.com/' . (has_key(a:repo, 'repo') ? a:repo.repo : a:repo.orig_path)
+    return url
+  else
+    return a:repo.repo
+  endif
+endfunction
+
 function! s:install(repo) abort
   let s:pct += 1
   let s:ui_buf[a:repo.name] = s:pct
-  let url = 'https://github.com/' . (has_key(a:repo, 'repo') ? a:repo.repo : a:repo.orig_path)
+  let url = s:get_uri(a:repo)
   if get(a:repo, 'rev', '') !=# ''
     let argv = ['git', 'clone', '--recursive', '--progress', url, a:repo.path]
   else
@@ -644,9 +653,6 @@ function! s:open_plugin_dir() abort
   let line = line('.') - 3
   let plugin = filter(copy(s:ui_buf), 's:ui_buf[v:key] == line')
   if !empty(plugin)
-    exe 'topleft split'
-    enew
-    exe 'resize ' . &lines * 30 / 100
     let shell = empty($SHELL) ? SpaceVim#api#import('system').isWindows ? 'cmd.exe' : 'bash' : $SHELL
     let path = ''
     if g:spacevim_plugin_manager ==# 'dein'
@@ -655,12 +661,25 @@ function! s:open_plugin_dir() abort
       let path = neobundle#get(keys(plugin)[0]).path
     elseif g:spacevim_plugin_manager ==# 'vim-plug'
     endif
-    if has('nvim') && exists('*termopen')
-      call termopen(shell, {'cwd' : path})
-    elseif exists('*term_start')
-      call term_start(shell, {'curwin' : 1, 'term_finish' : 'close', 'cwd' : path})
+    if isdirectory(path)
+      topleft new
+      exe 'resize ' . &lines * 30 / 100
+      if has('nvim') && exists('*termopen')
+        call termopen(shell, {'cwd' : path})
+      elseif exists('*term_start')
+        call term_start(shell, {'curwin' : 1, 'term_finish' : 'close', 'cwd' : path})
+      elseif exists(':VimShell')
+        exe 'VimShell ' .  path
+      else
+        close
+        echohl WarningMsg
+        echo 'Do not support terminal!'
+        echohl None
+      endif
     else
-      exe 'VimShell ' .  path
+      echohl WarningMsg
+      echo 'Plugin(' . keys(plugin)[0] . ') has not been installed!'
+      echohl None
     endif
   endif
 endfunction
