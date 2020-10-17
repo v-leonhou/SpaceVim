@@ -1,6 +1,6 @@
 "=============================================================================
 " statusline.vim --- SpaceVim statusline
-" Copyright (c) 2016-2019 Wang Shidong & Contributors
+" Copyright (c) 2016-2020 Wang Shidong & Contributors
 " Author: Wang Shidong < wsdjeg at 163.com >
 " URL: https://spacevim.org
 " License: GPLv3
@@ -30,6 +30,10 @@ let s:ICON = SpaceVim#api#import('unicode#icon')
 let s:VIM =  SpaceVim#api#import('vim')
 
 " init
+" " the separators icons:
+"
+" arrow :
+"   active: 
 let s:separators = {
       \ 'arrow' : ["\ue0b0", "\ue0b2"],
       \ 'curve' : ["\ue0b4", "\ue0b6"],
@@ -40,6 +44,7 @@ let s:separators = {
       \ }
 let s:i_separators = {
       \ 'arrow' : ["\ue0b1", "\ue0b3"],
+      \ 'slant' : ["\ue0b9", "\ue0bb"],
       \ 'bar' : ['|', '|'],
       \ 'nil' : ['', ''],
       \ }
@@ -432,6 +437,9 @@ function! SpaceVim#layers#core#statusline#get(...) abort
   elseif &filetype ==# 'git-log'
     return '%#SpaceVim_statusline_ia#' . s:winnr(1) . '%#SpaceVim_statusline_ia_SpaceVim_statusline_b#' . s:lsep
           \ . '%#SpaceVim_statusline_b# Git log %#SpaceVim_statusline_b_SpaceVim_statusline_c#' . s:lsep . ' '
+  elseif &filetype ==# 'vader-result'
+    return '%#SpaceVim_statusline_ia#' . s:winnr(1) . '%#SpaceVim_statusline_ia_SpaceVim_statusline_b#' . s:lsep
+          \ . '%#SpaceVim_statusline_b# Vader result %#SpaceVim_statusline_b_SpaceVim_statusline_c#' . s:lsep . ' '
   elseif &filetype ==# 'gina-status'
     return '%#SpaceVim_statusline_ia#' . s:winnr(1) . '%#SpaceVim_statusline_ia_SpaceVim_statusline_b#' . s:lsep
           \ . '%#SpaceVim_statusline_b# Gina status %#SpaceVim_statusline_b_SpaceVim_statusline_c#' . s:lsep . ' '
@@ -479,6 +487,8 @@ function! SpaceVim#layers#core#statusline#get(...) abort
     return '%#SpaceVim_statusline_a# WinDisk %#SpaceVim_statusline_a_SpaceVim_statusline_b#' . s:lsep
   elseif &filetype ==# 'SpaceVimTodoManager'
     return '%#SpaceVim_statusline_a# TODO manager %#SpaceVim_statusline_a_SpaceVim_statusline_b#' . s:lsep
+  elseif &filetype ==# 'SpaceVimTasksInfo'
+    return '%#SpaceVim_statusline_a# Tasks manager %#SpaceVim_statusline_a_SpaceVim_statusline_b#' . s:lsep
   elseif &filetype ==# 'SpaceVimGitBranchManager'
     return '%#SpaceVim_statusline_a# Branch manager %#SpaceVim_statusline_a_SpaceVim_statusline_b#' . s:lsep
   elseif &filetype ==# 'SpaceVimPlugManager'

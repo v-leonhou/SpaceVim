@@ -1,6 +1,6 @@
 "=============================================================================
 " flygrep.vim --- Grep on the fly in SpaceVim
-" Copyright (c) 2016-2019 Shidong Wang & Contributors
+" Copyright (c) 2016-2020 Wang Shidong & Contributors
 " Author: Shidong Wang < wsdjeg at 163.com >
 " URL: https://spacevim.org
 " License: GPLv3
@@ -13,8 +13,9 @@ let s:JOB = SpaceVim#api#import('job')
 let s:SYS = SpaceVim#api#import('system')
 let s:BUFFER = SpaceVim#api#import('vim#buffer')
 let s:LIST = SpaceVim#api#import('data#list')
+let s:REGEX = SpaceVim#api#import('vim#regex')
 
-let s:LOGGER =SpaceVim#logger#derive('flygrep ')
+let s:LOGGER =SpaceVim#logger#derive('FlyGrep')
 let s:HI = SpaceVim#api#import('vim#highlight')
 if has('nvim')
   let s:FLOATING = SpaceVim#api#import('neovim#floating')
@@ -28,6 +29,7 @@ let s:Window = SpaceVim#api#import('vim#window')
 
 let s:grepid = 0
 
+let s:filename_pattern = '[^:]*:\d\+:\d\+:'
 
 " Init local options: {{{
 let s:grep_expr = ''
@@ -88,7 +90,7 @@ function! s:grep_timer(timer) abort
         \ })
   " sometimes the flygrep command failed to run, so we need to log the jobid
   " of the grep command.
-  call SpaceVim#logger#info('flygrep job id is: ' . string(s:grepid))
+  call s:LOGGER.info('flygrep job id is: ' . string(s:grepid))
 endfunction
 
 function! s:get_search_cmd(expr) abort
@@ -143,7 +145,11 @@ endfunction
 function! s:expr_to_pattern(expr) abort
   if s:grep_mode ==# 'expr'
     let items = split(a:expr)
-    return join(items, '\|')
+    let pattern = join(items, '.*')
+    let ignorecase = &ignorecase ? '\c' : '\C'
+    let pattern = s:filename_pattern . '.*\zs' . ignorecase . s:REGEX.parser(pattern, 0)
+    call s:LOGGER.info('matchadd pattern: ' . pattern)
+    return pattern
   else
     return a:expr
   endif
@@ -257,7 +263,7 @@ function! s:start_replace() abort
   endif
   let replace_text = s:current_grep_pattern
   if !empty(replace_text)
-    let rst = SpaceVim#plugins#iedit#start({'expr' : replace_text}, line('w0'), line('w$'))
+    let rst = SpaceVim#plugins#iedit#start({'expr' : replace_text}, 1, line('$'))
   endif
   let s:hi_id = s:matchadd('FlyGrepPattern', s:expr_to_pattern(rst), 2)
   redrawstatus
@@ -500,6 +506,30 @@ function! s:open_item() abort
   endif
 endfunction
 
+function! s:open_item_in_tab() abort
+  let s:MPT._handle_fly = function('s:flygrep')
+  if getline('.') !=# ''
+    if s:grepid != 0
+      call s:JOB.stop(s:grepid)
+    endif
+    call s:MPT._clear_prompt()
+    let s:MPT._quit = 1
+    let line = getline('.')
+    let filename = fnameescape(split(line, ':\d\+:')[0])
+    let linenr = matchstr(line, ':\d\+:')[1:-2]
+    let colum = matchstr(line, '\(:\d\+\)\@<=:\d\+:')[1:-2]
+    if s:preview_able == 1
+      call s:close_preview_win()
+    endif
+    let s:preview_able = 0
+    noautocmd q
+    exe 'silent tabedit ' . filename
+    call s:update_history()
+    call cursor(linenr, colum)
+    noautocmd normal! :
+  endif
+endfunction
+
 function! s:open_item_vertically() abort
   let s:MPT._handle_fly = function('s:flygrep')
   if getline('.') !=# ''
@@ -544,6 +574,30 @@ function! s:open_item_horizontally() abort
     exe 'silent split ' . filename
     call s:update_history()
     call cursor(linenr, colum)
+    noautocmd normal! :
+  endif
+endfunction
+
+function! s:apply_to_quickfix() abort
+  let s:MPT._handle_fly = function('s:flygrep')
+  if getline('.') !=# ''
+    if s:grepid != 0
+      call s:JOB.stop(s:grepid)
+    endif
+    let s:MPT._quit = 1
+    if s:preview_able == 1
+      call s:close_preview_win()
+    endif
+    let s:preview_able = 0
+    let searching_result = s:BUFFER.buf_get_lines(s:buffer_id, 0, -1, 0)
+    noautocmd q
+    call s:update_history()
+    if !empty(searching_result)
+      cgetexpr join(searching_result, "\n")
+      call setqflist([], 'a', {'title' : 'FlyGrep partten:' . s:MPT._prompt.begin . s:MPT._prompt.cursor .s:MPT._prompt.end})
+      call s:MPT._clear_prompt()
+      copen
+    endif
     noautocmd normal! :
   endif
 endfunction
@@ -728,11 +782,13 @@ let s:MPT._function_key = {
       \ "\<C-k>" : function('s:previous_item'),
       \ "\<ScrollWheelUp>" : function('s:previous_item'),
       \ "\<Return>" : function('s:open_item'),
+      \ "\<C-t>" : function('s:open_item_in_tab'),
       \ "\<LeftMouse>" : function('s:move_cursor'),
       \ "\<2-LeftMouse>" : function('s:double_click'),
       \ "\<C-f>" : function('s:start_filter'),
       \ "\<C-v>" : function('s:open_item_vertically'),
       \ "\<C-s>" : function('s:open_item_horizontally'),
+      \ "\<C-q>" : function('s:apply_to_quickfix'),
       \ "\<M-r>" : function('s:start_replace'),
       \ "\<C-p>" : function('s:toggle_preview'),
       \ "\<C-e>" : function('s:toggle_expr_mode'),
@@ -805,7 +861,7 @@ function! SpaceVim#plugins#flygrep#open(argv) abort
   " setlocal nomodifiable
   setf SpaceVimFlyGrep
   call s:update_statusline()
-  call s:matchadd('FileName', '[^:]*:\d\+:\d\+:', 3)
+  call s:matchadd('FileName', s:filename_pattern, 3)
   let s:MPT._prompt.begin = get(a:argv, 'input', '')
   let fs = get(a:argv, 'files', '')
   if fs ==# '@buffers'
@@ -833,22 +889,22 @@ function! SpaceVim#plugins#flygrep#open(argv) abort
   let s:grep_ignore_case = get(a:argv, 'ignore_case', s:grep_default_ignore_case)
   let s:grep_smart_case  = get(a:argv, 'smart_case', s:grep_default_smart_case)
   let s:grep_expr_opt  = get(a:argv, 'expr_opt', s:grep_default_expr_opt)
-  call SpaceVim#logger#info('FlyGrep startting ===========================')
-  call SpaceVim#logger#info('   executable    : ' . s:grep_exe)
-  call SpaceVim#logger#info('   option        : ' . string(s:grep_opt))
-  call SpaceVim#logger#info('   r_option      : ' . string(s:grep_ropt))
-  call SpaceVim#logger#info('   files         : ' . string(s:grep_files))
-  call SpaceVim#logger#info('   dir           : ' . string(s:grep_dir))
-  call SpaceVim#logger#info('   ignore_case   : ' . string(s:grep_ignore_case))
-  call SpaceVim#logger#info('   smart_case    : ' . string(s:grep_smart_case))
-  call SpaceVim#logger#info('   expr opt      : ' . string(s:grep_expr_opt))
+  call s:LOGGER.info('FlyGrep startting ===========================')
+  call s:LOGGER.info('   executable    : ' . s:grep_exe)
+  call s:LOGGER.info('   option        : ' . string(s:grep_opt))
+  call s:LOGGER.info('   r_option      : ' . string(s:grep_ropt))
+  call s:LOGGER.info('   files         : ' . string(s:grep_files))
+  call s:LOGGER.info('   dir           : ' . string(s:grep_dir))
+  call s:LOGGER.info('   ignore_case   : ' . string(s:grep_ignore_case))
+  call s:LOGGER.info('   smart_case    : ' . string(s:grep_smart_case))
+  call s:LOGGER.info('   expr opt      : ' . string(s:grep_expr_opt))
   " sometimes user can not see the flygrep windows, redraw only once.
   redraw
   call s:MPT.open()
   if s:SL.support_float()
     call s:close_statusline()
   endif
-  call SpaceVim#logger#info('FlyGrep ending    ===========================')
+  call s:LOGGER.info('FlyGrep ending    ===========================')
   let &t_ve = save_tve
   if has('gui_running')
     call s:HI.hi(cursor_hi)

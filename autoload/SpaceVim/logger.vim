@@ -1,6 +1,6 @@
 "=============================================================================
 " logger.vim --- SpaceVim logger
-" Copyright (c) 2016-2019 Wang Shidong & Contributors
+" Copyright (c) 2016-2020 Wang Shidong & Contributors
 " Author: Wang Shidong < wsdjeg at 163.com >
 " URL: https://spacevim.org
 " License: GPLv3
@@ -143,6 +143,6 @@ function! s:derive.error(msg) abort
 endfunction
 
 function! SpaceVim#logger#derive(name) abort
-  let s:derive.derive_name = a:name
+  let s:derive.derive_name = printf('%' . strdisplaywidth(s:LOGGER.get_name()) . 'S', a:name)
   return deepcopy(s:derive)
 endfunction

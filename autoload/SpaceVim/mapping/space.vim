@@ -1,6 +1,6 @@
 "=============================================================================
 " space.vim --- Space key bindings
-" Copyright (c) 2016-2019 Wang Shidong & Contributors
+" Copyright (c) 2016-2020 Wang Shidong & Contributors
 " Author: Wang Shidong < wsdjeg at 163.com >
 " URL: https://spacevim.org
 " License: GPLv3
@@ -123,6 +123,16 @@ function! SpaceVim#mapping#space#init() abort
         \ ['window-down',
         \ [
         \ '[SPC w j] is to jump to the window below current windows',
+        \ '',
+        \ 'Definition: ' . s:file . ':' . s:lnum,
+        \ ]
+        \ ]
+        \ , 1)
+  let s:lnum = expand('<slnum>') + s:funcbeginline
+  call SpaceVim#mapping#space#def('nnoremap', ['w', 'x'], 'wincmd x',
+        \ ['window-switch-placement',
+        \ [
+        \ '[SPC w x] is to jump to exchange current window with next one.',
         \ '',
         \ 'Definition: ' . s:file . ':' . s:lnum,
         \ ]

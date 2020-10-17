@@ -1,6 +1,6 @@
 "=============================================================================
 " plugins.vim --- plugin wrapper
-" Copyright (c) 2016-2019 Wang Shidong & Contributors
+" Copyright (c) 2016-2020 Wang Shidong & Contributors
 " Author: Wang Shidong < wsdjeg at 163.com >
 " URL: https://spacevim.org
 " License: GPLv3
@@ -118,10 +118,10 @@ function! s:install_manager() abort
   " auto install plugin manager
   if g:spacevim_plugin_manager ==# 'neobundle'
     let g:_spacevim_neobundle_installed = 1
-    exec 'set runtimepath+=' . g:_spacevim_root_dir . 'bundle/neobundle.vim/'
+    let &rtp .= ',' . g:_spacevim_root_dir . 'bundle/neobundle.vim/'
   elseif g:spacevim_plugin_manager ==# 'dein'
     let g:_spacevim_dein_installed = 1
-    exec 'set runtimepath+=' . g:_spacevim_root_dir . 'bundle/dein.vim/'
+    let &rtp .= ',' . g:_spacevim_root_dir . 'bundle/dein.vim/'
   elseif g:spacevim_plugin_manager ==# 'vim-plug'
     "auto install vim-plug
     if filereadable(expand(g:spacevim_data_dir.'/vim-plug/autoload/plug.vim'))
@@ -140,7 +140,7 @@ function! s:install_manager() abort
         echohl None
       endif
     endif
-    exec 'set runtimepath+='g:spacevim_data_dir.'/vim-plug/'
+    let &rtp .= ',' . g:spacevim_data_dir.'vim-plug/'
   endif
 endf
 
@@ -206,11 +206,12 @@ function! SpaceVim#plugins#defind_hooks(bundle) abort
   endif
 endfunction
 
+
 function! SpaceVim#plugins#fetch() abort
   if g:spacevim_plugin_manager ==# 'neobundle'
-    NeoBundleFetch 'Shougo/neobundle.vim'
+    NeoBundleFetch g:_spacevim_root_dir . 'bundle/neobundle.vim'
   elseif g:spacevim_plugin_manager ==# 'dein'
-    call dein#add('Shougo/dein.vim')
+    call dein#add(g:_spacevim_root_dir . 'bundle/dein.vim', { 'merged' : 0})
   endif
 endfunction
 

@@ -1,6 +1,6 @@
 "=============================================================================
 " lsp.vim --- SpaceVim lsp layer
-" Copyright (c) 2016-2019 Wang Shidong & Contributors
+" Copyright (c) 2016-2020 Wang Shidong & Contributors
 " Author: Wang Shidong < wsdjeg at 163.com >
 " URL: https://spacevim.org
 " License: GPLv3
@@ -109,6 +109,7 @@ endfunction
 let s:enabled_fts = []
 
 let s:lsp_servers = {
+      \ 'ada' : ['ada_language_server'],
       \ 'c' : ['clangd'],
       \ 'cpp' : ['clangd'],
       \ 'css' : ['css-languageserver', '--stdio'],
@@ -161,11 +162,19 @@ function! s:jump_to_next_error() abort
     lnext
   catch
     try
-      cnext
+      ll
     catch
-      echohl WarningMsg
-      echon 'There is no errors!'
-      echohl None
+      try
+        cnext
+      catch
+        try
+          cc
+        catch
+          echohl WarningMsg
+          echon 'There is no errors!'
+          echohl None
+        endtry
+      endtry
     endtry
   endtry
 endfunction
@@ -175,11 +184,19 @@ function! s:jump_to_previous_error() abort
     lprevious
   catch
     try
-      cprevious
+      ll
     catch
-      echohl WarningMsg
-      echon 'There is no errors!'
-      echohl None
+      try
+        cprevious
+      catch
+        try
+          cc
+        catch
+          echohl WarningMsg
+          echon 'There is no errors!'
+          echohl None
+        endtry
+      endtry
     endtry
   endtry
 endfunction
