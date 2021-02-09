@@ -32,19 +32,31 @@ function! SpaceVim#layers#lsp#config() abort
   let g:LanguageClient_diagnosticsDisplay = {
         \ 1: {
         \ 'name': 'Error',
+        \ 'texthl': 'LanguageClientError',
         \ 'signText': g:spacevim_error_symbol,
+        \ 'signTexthl': 'LanguageClientError', 
+        \ 'virtualTexthl': 'Error',
         \ },
         \ 2: {
         \ 'name': 'Warning',
+        \ 'texthl': 'LanguageClientWarning',
         \ 'signText': g:spacevim_warning_symbol,
+        \ 'signTexthl': 'LanguageClientWarningSign',
+        \ 'virtualTexthl': 'Todo',
         \ },
         \ 3: {
         \ 'name': 'Information',
+        \ 'texthl': 'LanguageClientInfo',
         \ 'signText': g:spacevim_info_symbol,
+        \ 'signTexthl': 'LanguageClientInfoSign',
+        \ 'virtualTexthl': 'Todo',
         \ },
         \ 4: {
         \ 'name': 'Hint',
+        \ 'texthl': 'LanguageClientInfo',
         \ 'signText': g:spacevim_info_symbol,
+        \ 'signTexthl': 'LanguageClientInfoSign',
+        \ 'virtualTexthl': 'Todo',
         \ },
         \ }
 
@@ -122,7 +134,7 @@ let s:lsp_servers = {
       \ 'julia' : ['julia', '--startup-file=no', '--history-file=no', '-e', 'using LanguageServer; server = LanguageServer.LanguageServerInstance(STDIN, STDOUT, false); server.runlinter = true; run(server);'],
       \ 'objc' : ['clangd'],
       \ 'objcpp' : ['clangd'],
-      \ 'php' : ['php', g:spacevim_plugin_bundle_dir . 'repos/github.com/felixfbecker/php-language-server/bin/php-language-server.php'],
+      \ 'php' : ['php', g:spacevim_plugin_bundle_dir . 'repos/github.com/phpactor/phpactor/bin/phpactor', 'language-server'],
       \ 'purescript' : ['purescript-language-server', '--stdio'],
       \ 'python' : ['pyls'],
       \ 'crystal' : ['scry'],
